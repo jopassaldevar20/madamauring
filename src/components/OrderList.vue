@@ -18,7 +18,7 @@
             </div>
 
             <div class="oi__right_section">
-                <p>{{ order.date }}</p>
+                <p>{{ constructDate(order.date) }}</p>
 
                 <div class="rs__buttons_container">
                     <div @click="isWinLose(index, 'WIN')">
@@ -35,40 +35,60 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
+
+import { dayNames, monthNames } from '@/common/collections';
 
 export default {
     name: 'OrderList',
 
     computed: {
-        ...mapState(['isSignedIn', 'orderList'])
+        ...mapState(['isSignedIn', 'orderList']),
     },
 
     methods: {
+        ...mapMutations(['updateBlockUi']),
+
         ...mapActions(['getAllOrdered', 'isPatternExist', 'updatePattern', 'deleteOrder']),
 
+        constructDate (orderDate) {
+            let finalDate = '';
+
+            finalDate = `${dayNames[orderDate.getDay()]}, `;
+            finalDate += `${orderDate.getDate()} `;
+            finalDate += `${monthNames[orderDate.getMonth()]} `;
+            finalDate += `${orderDate.getFullYear()} -- `;
+            finalDate += `${orderDate.getHours()}:`;
+            finalDate += `${orderDate.getMinutes()}`;
+
+            return finalDate;
+        },
+
         async isWinLose (index, result) {
+            this.updateBlockUi({ blockUi: true });
             const selectedOrder = this.orderList[index];
             const exist = await this.isPatternExist({ pattern: selectedOrder.pattern });
 
-            this.deleteOrder({ rowNumber: selectedOrder.rowNumber });
-
             if (exist) {
-                const handleUpdate = (direction) => {
+                const handleUpdate = async (direction) => {
                     const up = direction === 'UP' ? ++exist.up : exist.up;
                     const down = direction === 'DOWN' ? ++exist.down : exist.down;
 
-                    this.updatePattern({ rowNumber: exist.rowNumber, pattern: exist.pattern, up, down });
+                    await this.updatePattern({ rowNumber: exist.rowNumber, pattern: exist.pattern, up, down });
                 };
 
                 if (selectedOrder.type.toUpperCase() === 'BUY') {
                     const direction = result === 'WIN' ? 'UP' : 'DOWN';
-                    handleUpdate(direction);
+                    await handleUpdate(direction);
                 } else if (selectedOrder.type.toUpperCase() === 'SELL') {
                     const direction = result === 'WIN' ? 'DOWN' : 'UP';
-                    handleUpdate(direction);
+                    await handleUpdate(direction);
                 }
             }
+
+            await this.deleteOrder({ rowNumber: selectedOrder.rowNumber });
+
+            this.updateBlockUi({ blockUi: false });
         }
     },
 

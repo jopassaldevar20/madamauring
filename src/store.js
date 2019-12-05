@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+
 import { API_KEY, CLIENT_ID, DISCOVERY_DOCS, SCOPES, SPREADSHEET_ID } from './config';
+
+import tools from './common/tools';
 
 Vue.use(Vuex);
 
@@ -103,23 +106,25 @@ export default new Vuex.Store({
                     for (let i = 0; i < range.values.length; i++) {
                         const row = range.values[i];
 
-                        orderList.push({
-                            pattern: row[0],
-                            type: row[1],
-                            symbol: row[2],
-                            date: row[3],
-                            rowNumber: i+2
-                        });
+                        if (row.length > 0) {
+                            orderList.push({
+                                pattern: row[0],
+                                type: row[1],
+                                symbol: row[2],
+                                date: new Date(row[3]),
+                                rowNumber: i+2
+                            });
+                        }
                     }
                 }
 
-                commit('updateOrderList', { orderList });
+                commit('updateOrderList', { orderList: [...tools.sortArrayByKey(orderList, 'date')] });
             } catch (error) {
                 commit('updateToast', { type: 'failed', message: error });
             }
         },
 
-        async appendNewOrder ({ commit, state }, { pattern, type, symbol, date }) {
+        async appendNewOrder ({ commit, state }, { pattern, type, symbol, createdAt }) {
             try {
                 const response = await window.gapi.client.sheets.spreadsheets.values.append({
                     spreadsheetId: SPREADSHEET_ID,
@@ -127,11 +132,12 @@ export default new Vuex.Store({
                     valueInputOption: 'RAW'
                 }, {
                     "majorDimension": "ROWS",
-                    "values": [[pattern, type, symbol, date]]
+                    "values": [[pattern, type, symbol, createdAt]]
                 });
 
                 const splitString = response.result.updates.updatedRange.split(':');
                 const rowNumber = Number(splitString[1].substr(1));
+                const date = new Date(createdAt);
                 const newOrder = { pattern, type, symbol, date, rowNumber };
 
                 commit('updateOrderList', { orderList: [...state.orderList, newOrder] });
@@ -180,22 +186,21 @@ export default new Vuex.Store({
             }
         },
 
-        deleteOrder ({ commit }, { rowNumber }) {
-            return new Promise (async (resolve, reject) => {
-                try {
-                    const range = `Order!A${rowNumber}:D${rowNumber}`;
+        async deleteOrder ({ commit, state }, { rowNumber }) {
+            try {
+                const range = `Order!A${rowNumber}:D${rowNumber}`;
 
-                    await window.gapi.client.sheets.spreadsheets.values.clear({
-                        spreadsheetId: SPREADSHEET_ID,
-                        range
-                    });
+                await window.gapi.client.sheets.spreadsheets.values.clear({
+                    spreadsheetId: SPREADSHEET_ID,
+                    range
+                });
 
-                    resolve();
-                } catch (error) {
-                    commit('updateToast', { type: 'failed', message: error });
-                    reject();
-                }
-            });
+                const newOrderList = state.orderList.filter(v => v.rowNumber !== rowNumber);
+
+                commit('updateOrderList', { orderList: newOrderList });
+            } catch (error) {
+                commit('updateToast', { type: 'failed', message: error });
+            }
         },
 
         async isPatternExist ({ commit }, { pattern }) {
@@ -238,7 +243,7 @@ export default new Vuex.Store({
                         }
 
                         rangeStart = rangeEnd + 1;
-                        rangeEnd = rangeStart + 10;
+                        rangeEnd = rangeStart + 9;
 
                         if (patternData || values.length !== 10) {
                             startOver = false;

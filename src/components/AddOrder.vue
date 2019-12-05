@@ -196,7 +196,7 @@ export default {
                         pattern: this.pattern,
                         type: this.type,
                         symbol: this.symbol,
-                        date: dateString
+                        createdAt: dateString
                     });
                 }
 
