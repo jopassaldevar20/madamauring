@@ -50,6 +50,10 @@ input {
     }
 }
 
+p {
+    letter-spacing: .5px;
+}
+
 select {
     width: 100%;
     height: 32px;
@@ -70,15 +74,15 @@ select {
 
 #app {
     min-height: 100vh;
-    color: #f8f9fa;
+    color: #b1b1b5;
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
-    background-color: #2c3e50;
+    background-color: #1e1e2f;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
 
     .app__main_container {
-        padding: 30px;
+        padding: 10px;
     }
 }
 </style>

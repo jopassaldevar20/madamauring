@@ -19,7 +19,10 @@ export default new Vuex.Store({
         searchBull: 0,
         searchBear: 0,
         blockUi: false,
-        orderList: []
+        orderList: [],
+        rightOrder: 0,
+        wrongOrder: 0,
+        orderResultRowNumber: null
     },
 
     getters: {
@@ -58,6 +61,18 @@ export default new Vuex.Store({
 
         updateOrderList (state, payload) {
             state.orderList = [...payload.orderList];
+        },
+
+        updateRightOrder (state, payload) {
+            state.rightOrder = payload.rightOrder;
+        },
+
+        updateWrongOrder (state, payload) {
+            state.wrongOrder = payload.wrongOrder;
+        },
+
+        updateOrderResultRowNumber (state, payload) {
+            state.orderResultRowNumber = payload.orderResultRowNumber;
         }
     },
 
@@ -68,7 +83,7 @@ export default new Vuex.Store({
                     await window.gapi.client.init({
                         apiKey: state.mahiwaga.palad,
                         clientId: state.mahiwaga.baraha,
-                        discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+                        discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
                         scope: 'https://www.googleapis.com/auth/spreadsheets'
                     });
 
@@ -136,8 +151,8 @@ export default new Vuex.Store({
                     range: 'Order!A2',
                     valueInputOption: 'RAW'
                 }, {
-                    "majorDimension": "ROWS",
-                    "values": [[pattern, type, symbol, createdAt]]
+                    'majorDimension': 'ROWS',
+                    'values': [[pattern, type, symbol, createdAt]]
                 });
 
                 const splitString = response.result.updates.updatedRange.split(':');
@@ -160,8 +175,8 @@ export default new Vuex.Store({
                     range: 'Pattern!A2',
                     valueInputOption: 'RAW'
                 }, {
-                    "majorDimension": "ROWS",
-                    "values": [[pattern, up, down]]
+                    'majorDimension': 'ROWS',
+                    'values': [[pattern, up, down]]
                 });
 
                 return response;
@@ -180,8 +195,8 @@ export default new Vuex.Store({
                     range,
                     valueInputOption: 'RAW'
                 }, {
-                    "majorDimension": "ROWS",
-                    "values": [[pattern, up, down]]
+                    'majorDimension': 'ROWS',
+                    'values': [[pattern, up, down]]
                 });
 
                 return true;
@@ -205,6 +220,53 @@ export default new Vuex.Store({
                 commit('updateOrderList', { orderList: newOrderList });
             } catch (error) {
                 commit('updateToast', { type: 'failed', message: error });
+            }
+        },
+
+        async getMisc ({ commit, state }) {
+            try {
+                const response = await window.gapi.client.sheets.spreadsheets.values.get({
+                    spreadsheetId: state.mahiwaga.bola,
+                    range: 'Misc!A1:D1'
+                });
+
+                const values = response.result.values;
+
+                for (let i = 0; i < values.length; i++) {
+                    const item = values[i];
+
+                    if (item[0] === 'order-results') {
+                        commit('updateOrderResultRowNumber', { orderResultRowNumber: i + 1 });
+                        commit('updateRightOrder', { rightOrder: Number(item[1]) });
+                        commit('updateWrongOrder', { wrongOrder: Number(item[2]) });
+                    }
+                }
+            } catch (error) {
+                commit('updateToast', { type: 'failed', message: error });
+            }
+        },
+
+        async updateOrderResult ({ commit, state }, { isRight }) {
+            try {
+                if (isRight) {
+                    commit('updateRightOrder', { rightOrder: state.rightOrder + 1 });
+                } else {
+                    commit('updateWrongOrder', { wrongOrder: state.wrongOrder + 1 });
+                }
+
+                await window.gapi.client.sheets.spreadsheets.values.update({
+                    spreadsheetId: state.mahiwaga.bola,
+                    range: `Misc!A${state.orderResultRowNumber}:C${state.orderResultRowNumber}`,
+                    valueInputOption: 'RAW'
+                }, {
+                    'majorDimension': 'ROWS',
+                    'values': [['order-results', state.rightOrder, state.wrongOrder]]
+                });
+
+                return true;
+            } catch (error) {
+                commit('updateToast', { type: 'failed', message: error });
+                return false;
             }
         },
 

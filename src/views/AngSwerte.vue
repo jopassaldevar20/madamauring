@@ -16,6 +16,10 @@
 
                 <OrderList />
             </div>
+
+            <div>
+                <OrderResult />
+            </div>
         </div>
     </div>
 </template>
@@ -25,23 +29,25 @@ import { mapState, mapMutations, mapActions } from 'vuex';
 
 import tools from '@/common/tools';
 
-import LogIn from '@/components/LogIn';
-import AddOrder from '@/components/AddOrder';
-import SearchResult from '@/components/SearchResult';
-import OrderList from '@/components/OrderList';
-import AddPattern from '@/components/AddPattern';
-import PatternConverter from '@/components/PatternConverter';
+import AddOrder from '@/parts/AddOrder';
+import AddPattern from '@/parts/AddPattern';
+import LogIn from '@/parts/LogIn';
+import OrderList from '@/parts/OrderList';
+import OrderResult from '@/parts/OrderResult';
+import PatternConverter from '@/parts/PatternConverter';
+import SearchResult from '@/parts/SearchResult';
 
 export default {
     name: 'AngSwerte',
 
     components: {
-        LogIn,
         AddOrder,
-        SearchResult,
-        OrderList,
         AddPattern,
-        PatternConverter
+        LogIn,
+        OrderList,
+        OrderResult,
+        PatternConverter,
+        SearchResult
     },
 
     computed: {
@@ -76,7 +82,7 @@ export default {
         justify-content: space-between;
 
         > div {
-            flex-basis: 49%;
+            flex-basis: 32.5%;
         }
     }
 }

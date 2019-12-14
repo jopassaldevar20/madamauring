@@ -43,13 +43,24 @@ export default {
     name: 'OrderList',
 
     computed: {
-        ...mapState(['isSignedIn', 'orderList']),
+        ...mapState([
+            'isSignedIn',
+            'orderList',
+            'rightOrder',
+            'wrongOrder'
+        ]),
     },
 
     methods: {
         ...mapMutations(['updateBlockUi']),
 
-        ...mapActions(['getAllOrdered', 'isPatternExist', 'updatePattern', 'deleteOrder']),
+        ...mapActions([
+            'getAllOrdered',
+            'isPatternExist',
+            'updatePattern',
+            'deleteOrder',
+            'updateOrderResult'
+        ]),
 
         constructDate (orderDate) {
             let finalDate = '';
@@ -70,6 +81,10 @@ export default {
             const exist = await this.isPatternExist({ pattern: selectedOrder.pattern });
 
             if (exist) {
+                if (exist.up !== 0 || exist.down !== 0) {
+                    await this.updateOrderResult({ isRight: result === 'WIN' });
+                }
+
                 const handleUpdate = async (direction) => {
                     const up = direction === 'UP' ? ++exist.up : exist.up;
                     const down = direction === 'DOWN' ? ++exist.down : exist.down;
@@ -78,11 +93,9 @@ export default {
                 };
 
                 if (selectedOrder.type.toUpperCase() === 'BUY') {
-                    const direction = result === 'WIN' ? 'UP' : 'DOWN';
-                    await handleUpdate(direction);
+                    await handleUpdate(result === 'WIN' ? 'UP' : 'DOWN');
                 } else if (selectedOrder.type.toUpperCase() === 'SELL') {
-                    const direction = result === 'WIN' ? 'DOWN' : 'UP';
-                    await handleUpdate(direction);
+                    await handleUpdate(result === 'WIN' ? 'DOWN' : 'UP');
                 }
             }
 

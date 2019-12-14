@@ -24,7 +24,7 @@ export default {
 
     setCookie (name, value) {
         const date = new Date();
-        const tomorrow = date.setDate(date.getDate() + 1);
+        const tomorrow = date.setDate(date.getDate() + 5);
         const parseTomorrow = new Date(tomorrow);
 
         document.cookie = `${name}=${value};expires=${parseTomorrow}`;
