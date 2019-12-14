@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { API_KEY, CLIENT_ID, DISCOVERY_DOCS, SCOPES, SPREADSHEET_ID } from './config';
+import { NUMBER_OF_REQUEST } from './config';
 
 import tools from './common/tools';
 
@@ -9,6 +9,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
+        mahiwaga: null,
         isSignedIn: false,
         toast: {
             type: '',
@@ -26,6 +27,10 @@ export default new Vuex.Store({
     },
 
     mutations: {
+        updateMahiwaga (state, payload) {
+            state.mahiwaga = payload;
+        },
+
         updateIsSignedIn (state, payload) {
             state.isSignedIn = payload.isSignedIn;
         },
@@ -57,14 +62,14 @@ export default new Vuex.Store({
     },
 
     actions: {
-        loadGoogleApi ({ commit }) {
+        loadGoogleApi ({ commit, state }) {
             window.gapi.load('client:auth2', async () => {
                 try {
                     await window.gapi.client.init({
-                        apiKey: API_KEY,
-                        clientId: CLIENT_ID,
-                        discoveryDocs: DISCOVERY_DOCS,
-                        scope: SCOPES
+                        apiKey: state.mahiwaga.palad,
+                        clientId: state.mahiwaga.baraha,
+                        discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+                        scope: 'https://www.googleapis.com/auth/spreadsheets'
                     });
 
                     /**
@@ -92,10 +97,10 @@ export default new Vuex.Store({
             window.gapi.auth2.getAuthInstance().signOut();
         },
 
-        async getAllOrdered ({ commit }) {
+        async getAllOrdered ({ commit, state }) {
             try {
                 const response = await window.gapi.client.sheets.spreadsheets.values.get({
-                    spreadsheetId: SPREADSHEET_ID,
+                    spreadsheetId: state.mahiwaga.bola,
                     range: 'Order!A2:D1000'
                 });
 
@@ -112,7 +117,7 @@ export default new Vuex.Store({
                                 type: row[1],
                                 symbol: row[2],
                                 date: new Date(row[3]),
-                                rowNumber: i+2
+                                rowNumber: i + 2
                             });
                         }
                     }
@@ -127,7 +132,7 @@ export default new Vuex.Store({
         async appendNewOrder ({ commit, state }, { pattern, type, symbol, createdAt }) {
             try {
                 const response = await window.gapi.client.sheets.spreadsheets.values.append({
-                    spreadsheetId: SPREADSHEET_ID,
+                    spreadsheetId: state.mahiwaga.bola,
                     range: 'Order!A2',
                     valueInputOption: 'RAW'
                 }, {
@@ -148,10 +153,10 @@ export default new Vuex.Store({
             }
         },
 
-        async appendNewPattern ({ commit }, { pattern, up, down }) {
+        async appendNewPattern ({ commit, state }, { pattern, up, down }) {
             try {
                 const response = await window.gapi.client.sheets.spreadsheets.values.append({
-                    spreadsheetId: SPREADSHEET_ID,
+                    spreadsheetId: state.mahiwaga.bola,
                     range: 'Pattern!A2',
                     valueInputOption: 'RAW'
                 }, {
@@ -166,12 +171,12 @@ export default new Vuex.Store({
             }
         },
 
-        async updatePattern ({ commit }, { rowNumber, pattern, up, down }) {
+        async updatePattern ({ commit, state }, { rowNumber, pattern, up, down }) {
             try {
                 const range = `Pattern!A${rowNumber}:C${rowNumber}`;
 
                 await window.gapi.client.sheets.spreadsheets.values.update({
-                    spreadsheetId: SPREADSHEET_ID,
+                    spreadsheetId: state.mahiwaga.bola,
                     range,
                     valueInputOption: 'RAW'
                 }, {
@@ -191,7 +196,7 @@ export default new Vuex.Store({
                 const range = `Order!A${rowNumber}:D${rowNumber}`;
 
                 await window.gapi.client.sheets.spreadsheets.values.clear({
-                    spreadsheetId: SPREADSHEET_ID,
+                    spreadsheetId: state.mahiwaga.bola,
                     range
                 });
 
@@ -203,14 +208,14 @@ export default new Vuex.Store({
             }
         },
 
-        async isPatternExist ({ commit }, { pattern }) {
+        async isPatternExist ({ commit, state }, { pattern }) {
             try {
                 let rangeStart = 2;
-                let rangeEnd = 11;
+                let rangeEnd = NUMBER_OF_REQUEST + 1;
 
                 const requestData = async (range) => {
                     const response = await window.gapi.client.sheets.spreadsheets.values.get({
-                        spreadsheetId: SPREADSHEET_ID,
+                        spreadsheetId: state.mahiwaga.bola,
                         range
                     });
 
@@ -243,9 +248,9 @@ export default new Vuex.Store({
                         }
 
                         rangeStart = rangeEnd + 1;
-                        rangeEnd = rangeStart + 9;
+                        rangeEnd = rangeStart + NUMBER_OF_REQUEST - 1;
 
-                        if (patternData || values.length !== 10) {
+                        if (patternData || values.length !== NUMBER_OF_REQUEST) {
                             startOver = false;
                         } else {
                             startOver = true;

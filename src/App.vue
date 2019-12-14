@@ -3,23 +3,7 @@
         <TheToast />
 
         <div class="app__main_container">
-            <LogIn />
-
-            <div class="mc__left_right">
-                <div>
-                    <AddOrder />
-
-                    <PatternConverter />
-
-                    <AddPattern />
-                </div>
-
-                <div>
-                    <SearchResult />
-
-                    <OrderList />
-                </div>
-            </div>
+            <router-view />
         </div>
 
         <BlockUi />
@@ -27,27 +11,15 @@
 </template>
 
 <script>
-import LogIn from './components/LogIn';
-import AddOrder from './components/AddOrder';
-import SearchResult from './components/SearchResult';
-import OrderList from './components/OrderList';
 import TheToast from './components/TheToast';
 import BlockUi from './components/BlockUi';
-import AddPattern from './components/AddPattern';
-import PatternConverter from './components/PatternConverter';
 
 export default {
     name: 'app',
 
     components: {
-        LogIn,
-        AddOrder,
-        SearchResult,
-        OrderList,
         TheToast,
-        BlockUi,
-        AddPattern,
-        PatternConverter
+        BlockUi
     }
 };
 </script>
@@ -107,16 +79,6 @@ select {
 
     .app__main_container {
         padding: 30px;
-
-        .mc__left_right {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-
-            > div {
-                flex-basis: 49%;
-            }
-        }
     }
 }
 </style>
