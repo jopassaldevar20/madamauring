@@ -37,10 +37,10 @@ input, select {
 
 input {
     width: 100%;
-    height: 32px;
+    height: 36px;
     padding: 0 10px;
-    color: #f8f9fa;
-    background-color: #2b2e4c;
+    color: #b1b1b5;
+    background-color: #1e1e2f;
     border: 0;
     border-radius: 4px;
     outline: none;
@@ -56,10 +56,10 @@ p {
 
 select {
     width: 100%;
-    height: 32px;
+    height: 36px;
     padding: 0 10px;
-    color: #f8f9fa;
-    background-color: #2b2e4c;
+    color: #b1b1b5;
+    background-color: #1e1e2f;
     border: 0;
     border-radius: 4px;
     cursor: pointer;

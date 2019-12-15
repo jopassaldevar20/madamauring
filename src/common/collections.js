@@ -22,3 +22,17 @@ export const dayNames = [
     'Friday',
     'Saturday'
 ];
+
+export const tradeType = [
+    'Buy',
+    'Sell'
+];
+
+export const tradeSymbol = [
+    'EURUSD',
+    'USDCAD',
+    'USDJPY',
+    'NZDUSD',
+    'AUDUSD',
+    'GBPUSD'
+];

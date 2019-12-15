@@ -1,28 +1,46 @@
 <template>
-    <div class="search_result_wrapper">
-        <p>{{ parsedPattern }}</p>
+    <BaseCard class="search_result_wrapper">
+        <div class="sr__pattern">
+            <p>PATTERN</p>
+
+            <p>{{ parsedPattern }}</p>
+        </div>
 
         <div class="sr__up_down">
-            <div class="ud__up">
-                <i class="material-icons">trending_up</i>
+            <div class="ud__line_direction ld__up">
+                <p>{{ isNaN(upPercent) ? 0 : upPercent }}<span>%</span></p>
 
-                <p>{{ isNaN(upPercent) ? 0 : upPercent }}%</p>
+                <div>
+                    <p>{{ addZeros(searchBull) }}</p>
+
+                    <i class="material-icons">trending_up</i>
+                </div>
             </div>
 
-            <div class="ud__down">
-                <i class="material-icons">trending_down</i>
+            <div class="ud__line_direction ld__down">
+                <p>{{ isNaN(upPercent) ? 0 : downPercent }}<span>%</span></p>
 
-                <p>{{ isNaN(downPercent) ? 0 : downPercent }}%</p>
+                <div>
+                    <p>{{ addZeros(searchBear) }}</p>
+
+                    <i class="material-icons">trending_down</i>
+                </div>
             </div>
         </div>
-    </div>
+    </BaseCard>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 
+import BaseCard from '@/components/BaseCard';
+
 export default {
     name: 'SearchResult',
+
+    components: {
+        BaseCard
+    },
 
     data () {
         return {
@@ -36,19 +54,31 @@ export default {
         ...mapState(['searchPattern', 'searchBull', 'searchBear']),
 
         parsedPattern () {
-            return this.searchPattern === '' ? 'No Result' : this.searchPattern;
+            return this.searchPattern === '' ? 'XXXXXXXXXX' : this.searchPattern;
         },
 
         upPercent () {
-            return this.searchBull / this.sumOfResult * 100;
+            return Math.round(this.searchBull / this.sumOfResult * 100);
         },
 
         downPercent () {
-            return this.searchBear / this.sumOfResult * 100;
+            return Math.round(this.searchBear / this.sumOfResult * 100);
         },
 
         sumOfResult () {
             return this.searchBull + this.searchBear;
+        }
+    },
+
+    methods: {
+        addZeros (num) {
+            let numStr = num.toString();
+
+            while (numStr.length < 3) {
+                numStr = `0${numStr}`;
+            }
+
+            return numStr;
         }
     }
 };
@@ -56,49 +86,63 @@ export default {
 
 <style scoped lang="scss">
 .search_result_wrapper {
-    margin-bottom: 20px;
-    padding: 30px;
-    background-color: #131633;
-    border-radius: 6px;
+    .sr__pattern {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #313452;
 
-    > p {
-        font-size: 40px;
-        text-align: center;
+        > p {
+            font-weight: 700;
+        }
     }
 
     .sr__up_down {
-        margin-top: 30px;
-        color: #212529;
-        font-size: 18px;
+        padding: 10px;
         display: flex;
         justify-content: space-around;
 
-        > div {
-            width: 60px;
-            height: 60px;
-            flex-grow: 0;
-            display: flex;
-            align-items: center;
-            flex-direction: column;
-            justify-content: center;
-            border-radius: 4px;
+        .ud__line_direction {
+            padding-left: 10px;
 
-            > i {
-                font-size: 30px;
+            &.ld__up {
+                border-left: 4px solid #71c016;
+
+                > div > i {
+                    color: #71c016;
+                }
+            }
+
+            &.ld__down {
+                border-left: 4px solid #ff4747;
+
+                > div > i {
+                    color: #ff4747;
+                }
             }
 
             > p {
-                font-size: 14px;
+                font-size: 30px;
                 font-weight: 700;
+
+                > span {
+                    margin-left: 2px;
+                    font-size: 20px;
+                }
             }
-        }
 
-        .ud__up {
-            background-color: #70d96e;
-        }
+            > div {
+                display: flex;
 
-        .ud__down {
-            background-color: #ef595c;
+                > i {
+                    margin-left: 4px;
+                    color: #71c016;
+                }
+
+                > p {
+                    font-size: 18px;
+                }
+            }
         }
     }
 }

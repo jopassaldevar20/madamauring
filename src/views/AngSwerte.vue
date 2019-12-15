@@ -4,9 +4,13 @@
 
         <div class="as__pattern_order">
             <div>
-                <AddOrder />
+                <OrderResult />
+            </div>
 
+            <div>
                 <PatternConverter />
+
+                <AddOrder />
 
                 <AddPattern />
             </div>
@@ -15,10 +19,6 @@
                 <SearchResult />
 
                 <OrderList />
-            </div>
-
-            <div>
-                <OrderResult />
             </div>
         </div>
     </div>
@@ -83,6 +83,10 @@ export default {
 
         > div {
             flex-basis: 32.5%;
+
+            > div {
+                margin-bottom: 20px;
+            }
         }
     }
 }

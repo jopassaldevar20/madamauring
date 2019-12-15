@@ -1,29 +1,53 @@
 <template>
-    <div class="pattern_converter_wrapper">
-        <input maxlength="10" v-model="pattern" />
+    <BaseCard class="pattern_converter_wrapper">
+        <div class="pc__input_output">
+            <input maxlength="10" v-model="pattern" />
 
-        <p>{{ converted }}</p>
+            <div class="io__copy_text">
+                <i class="material-icons" @click="copyPattern">file_copy</i>
 
-        <div class="pc__button" @click="convertPattern">
+                <p>{{ converted }}</p>
+            </div>
+        </div>
+
+        <div class="base_button blue" @click="convertPattern">
             <p>Convert</p>
         </div>
-    </div>
+    </BaseCard>
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
+import BaseCard from '@/components/BaseCard';
+
 export default {
     name: 'PatternConverter',
+
+    components: {
+        BaseCard
+    },
 
     data () {
         return {
             pattern: '',
-            converted: ''
+            converted: 'XXXXXXXXXX'
         };
     },
 
     methods: {
+        ...mapMutations(['updateToast', 'updateConvertedPattern']),
+
+        copyPattern () {
+            this.updateConvertedPattern ({ convertedPattern: this.converted });
+        },
+
         convertPattern () {
-            this.converted = this.pattern.split("").reverse().join("");
+            if (this.pattern.length === 10) {
+                this.converted = this.pattern.split("").reverse().join("");
+            } else {
+                this.updateToast({ type: 'failed', message: 'Please provide 10 digits.' });
+            }
         }
     }
 };
@@ -31,16 +55,36 @@ export default {
 
 <style scoped lang="scss">
 .pattern_converter_wrapper {
-    margin-bottom: 20px;
-    padding: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #131633;
-    border-radius: 6px;
+    padding: 10px;
 
-    > input {
-        flex-basis: 40%;
+    .pc__input_output {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        > input {
+            flex-basis: 60%;
+            text-align: center;
+        }
+
+        .io__copy_text {
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+
+            > i {
+                color: #4d83ff;
+                cursor: pointer;
+                -webkit-touch-callout: none;
+                user-select: none;
+            }
+
+            > p {
+                margin-left: 10px;
+                font-weight: 700;
+            }
+        }
     }
 
     .pc__button {

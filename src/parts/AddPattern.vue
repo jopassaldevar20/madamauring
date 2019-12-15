@@ -83,7 +83,6 @@ export default {
 
         async addPattern () {
             this.updateBlockUi({ blockUi: true });
-            this.updateToast({ type: '', message: '' });
 
             if (this.pattern.length === 10) {
                 const exist = await this.isPatternExist({ pattern: this.pattern });

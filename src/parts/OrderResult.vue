@@ -56,6 +56,8 @@ export default {
 
 <style scoped lang="scss">
 .order_result_wrapper {
+    padding: 10px;
+
     .or__result_bar {
         height: 3px;
         position: relative;

@@ -15,6 +15,7 @@ export default new Vuex.Store({
             type: '',
             message: ''
         },
+        convertedPattern: '',
         searchPattern: '',
         searchBull: 0,
         searchBear: 0,
@@ -23,10 +24,6 @@ export default new Vuex.Store({
         rightOrder: 0,
         wrongOrder: 0,
         orderResultRowNumber: null
-    },
-
-    getters: {
-
     },
 
     mutations: {
@@ -41,6 +38,10 @@ export default new Vuex.Store({
         updateToast (state, payload) {
             state.toast.type = payload.type || '';
             state.toast.message = payload.message || '';
+        },
+
+        updateConvertedPattern (state, payload) {
+            state.convertedPattern = payload.convertedPattern;
         },
 
         updateSearchPattern (state, payload) {
@@ -132,7 +133,8 @@ export default new Vuex.Store({
                                 type: row[1],
                                 symbol: row[2],
                                 date: new Date(row[3]),
-                                rowNumber: i + 2
+                                rowNumber: i + 2,
+                                selected: false
                             });
                         }
                     }
