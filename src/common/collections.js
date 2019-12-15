@@ -24,8 +24,8 @@ export const dayNames = [
 ];
 
 export const tradeType = [
-    'Buy',
-    'Sell'
+    'BUY',
+    'SELL'
 ];
 
 export const tradeSymbol = [

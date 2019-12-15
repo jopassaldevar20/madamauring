@@ -48,11 +48,11 @@
 
         <div class="ao__buttons_container">
             <div class="base_button orange" @click="handleSearch">
-                <p>Search</p>
+                <p>SEARCH</p>
             </div>
 
             <div :class="{ 'base_button': true, 'blue': true, 'disabled': searchPattern === '' }" @click="handleSubmit">
-                <p>Submit</p>
+                <p>SUBMIT</p>
             </div>
         </div>
     </BaseCard>
@@ -75,7 +75,7 @@ export default {
     data () {
         return {
             pattern: '',
-            type: 'Buy',
+            type: 'BUY',
             tradeType,
             symbol: 'EURUSD',
             tradeSymbol,
@@ -199,11 +199,11 @@ export default {
         justify-content: space-between;
 
         .pts__pattern {
-            flex-basis: 42%;
+            flex-basis: 38%;
         }
 
         .pts__type {
-            flex-basis: 20%;
+            flex-basis: 24%;
         }
 
         .pts__symbol {
@@ -221,10 +221,10 @@ export default {
 
             > div {
                 height: 36px;
-                padding: 0 10px;
+                padding: 0 8px;
                 display: flex;
                 align-items: center;
-                background-color: #1e1e2f;
+                border: 2px solid #1e1e2f;
                 border-radius: 4px;
             }
         }

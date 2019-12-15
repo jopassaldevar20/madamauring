@@ -11,7 +11,7 @@
         </div>
 
         <div class="base_button blue" @click="convertPattern">
-            <p>Convert</p>
+            <p>CONVERT</p>
         </div>
     </BaseCard>
 </template>

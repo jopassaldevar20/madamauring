@@ -29,7 +29,7 @@
             </div>
 
             <div class="ti__type_buttons">
-                <div :class="{ 'tb__type': true, 'tb__buy': order.type === 'Buy', 'tb__sell': order.type === 'Sell'}">
+                <div :class="{ 'tb__type': true, 'tb__buy': order.type === 'BUY', 'tb__sell': order.type === 'SELL'}">
                     <span></span>
 
                     <p>{{ order.type.toUpperCase() }}</p>
@@ -132,9 +132,9 @@ export default {
                     await this.updatePattern({ rowNumber: exist.rowNumber, pattern: exist.pattern, up, down });
                 };
 
-                if (selectedOrder.type.toUpperCase() === 'BUY') {
+                if (selectedOrder.type === 'BUY') {
                     await handleUpdate(result === 'WIN' ? 'UP' : 'DOWN');
-                } else if (selectedOrder.type.toUpperCase() === 'SELL') {
+                } else if (selectedOrder.type === 'SELL') {
                     await handleUpdate(result === 'WIN' ? 'DOWN' : 'UP');
                 }
             }

@@ -5,6 +5,8 @@
         <div class="as__pattern_order">
             <div>
                 <OrderResult />
+
+                <OrderHistory />
             </div>
 
             <div>
@@ -32,6 +34,7 @@ import tools from '@/common/tools';
 import AddOrder from '@/parts/AddOrder';
 import AddPattern from '@/parts/AddPattern';
 import LogIn from '@/parts/LogIn';
+import OrderHistory from '@/parts/OrderHistory';
 import OrderList from '@/parts/OrderList';
 import OrderResult from '@/parts/OrderResult';
 import PatternConverter from '@/parts/PatternConverter';
@@ -44,6 +47,7 @@ export default {
         AddOrder,
         AddPattern,
         LogIn,
+        OrderHistory,
         OrderList,
         OrderResult,
         PatternConverter,

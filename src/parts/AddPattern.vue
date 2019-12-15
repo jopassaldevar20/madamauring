@@ -1,74 +1,88 @@
 <template>
-    <div class="add_pattern_wrapper">
-        <div class="ap__pattern_add">
-            <div class="pa__input">
-                <p>Pattern</p>
+    <BaseCard class="add_pattern_wrapper">
+        <div class="ap__label_input">
+            <p>PATTERN</p>
 
+            <div class="li_input_button">
                 <input maxlength="10" v-model="pattern" />
-            </div>
 
-            <div class="pa__button" @click="addPattern">
-                <p>Add</p>
-            </div>
-        </div>
-
-        <div  v-if="isExist" class="ap__saved_result">
-            <p>Already Exist</p>
-
-            <div class="sr__info_section">
-                <div class="is__label_value">
-                    <p>Pattern</p>
-
-                    <p>{{ savedPattern }}</p>
-                </div>
-
-                <div class="is__label_value">
-                    <p>Up</p>
-
-                    <p>{{ savedUp }} (<span>+{{ upPlus }}</span>)</p>
-                </div>
-
-
-                <div class="is__label_value">
-                    <p>Down</p>
-
-                    <p>{{ saveDown }} (<span>+{{ downPlus }}</span>)</p>
-                </div>
-            </div>
-
-            <div class="sr__buttons_section">
-                <div class="bs__button" @click="addUp">
-                    <p>+1 UP</p>
-                </div>
-
-                <div class="bs__button" @click="addDown">
-                    <p>+1 DOWN</p>
-                </div>
-
-                <div class="bs__button" @click="saveChanges">
-                    <p>Save</p>
-                </div>
-
-                <div class="bs__button" @click="resetValues">
-                    <p>Reset</p>
+                <div class="base_button blue" @click="addPattern">
+                    <p>Add</p>
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="ap__existed_edit">
+            <p>EXISTED</p>
+
+            <div class="ee__pattern_status">
+                <div class="ps__label_value lv__pattern">
+                    <p>PATTERN</p>
+
+                    <div>
+                        <p>{{ savedPattern }}</p>
+                    </div>
+                </div>
+
+                <div class="ps__label_value lv__up">
+                    <p>UP</p>
+
+                    <div>
+                        <p>{{ addZeros(savedUp) }} (<span>+{{ upPlus }}</span>)</p>
+                    </div>
+                </div>
+
+
+                <div class="ps__label_value lv__down">
+                    <p>DOWN</p>
+
+                    <div>
+                        <p>{{ addZeros(saveDown) }} (<span>+{{ downPlus }}</span>)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ee__buttons_section">
+                <div class="bs__edit_buttons">
+                    <div class="base_button orange" @click="addUp">
+                        <p>ADD UP</p>
+                    </div>
+
+                    <div class="base_button orange" @click="addDown">
+                        <p>ADD DOWN</p>
+                    </div>
+
+                    <div class="base_button orange" @click="resetValues">
+                        <p>RESET</p>
+                    </div>
+                </div>
+
+                <div class="base_button blue" @click="saveChanges">
+                    <p>SAVE</p>
+                </div>
+            </div>
+        </div>
+    </BaseCard>
 </template>
 
 <script>
 import { mapActions, mapMutations } from 'vuex';
 
+import BaseCard from '@/components/BaseCard';
+
 export default {
     name: 'AddPattern',
+
+    components: {
+        BaseCard
+    },
 
     data () {
         return {
             isExist: false,
             pattern: '',
             savedRowNumber: 0,
-            savedPattern: '',
+            savedPattern: 'XXXXXXXXXX',
             savedUp: 0,
             saveDown: 0,
             upPlus: 0,
@@ -80,6 +94,16 @@ export default {
         ...mapMutations(['updateToast', 'updateBlockUi']),
 
         ...mapActions(['appendNewPattern', 'isPatternExist', 'updatePattern']),
+
+        addZeros (num) {
+            let numStr = num.toString();
+
+            while (numStr.length < 3) {
+                numStr = `0${numStr}`;
+            }
+
+            return numStr;
+        },
 
         async addPattern () {
             this.updateBlockUi({ blockUi: true });
@@ -150,86 +174,94 @@ export default {
 
 <style scoped lang="scss">
 .add_pattern_wrapper {
-    padding: 30px;
-    background-color: #131633;
-    border-radius: 6px;
+    .ap__label_input {
+        padding: 10px 10px 16px;
+        border-bottom: 1px solid #313452;
 
-    .ap__pattern_add {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-
-        .pa__input {
-            flex-basis: 60%;
-
-            > p {
-                margin-bottom: 10px;
-                font-size: 14px;
-            }
+        > p {
+            margin-bottom: 4px;
+            font-size: 12px;
+            font-weight: 700;
         }
 
-        .pa__button {
-            padding: 10px;
-            flex-basis: 30%;
+        .li_input_button {
+            width: 100%;
             display: flex;
             align-items: center;
-            justify-content: center;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            cursor: pointer;
+            justify-content: space-between;
 
-            &:hover {
-                background-color: darken(#f8f9fa, 20%);
+            > input {
+                flex-basis: 56%;
             }
 
-            > p {
-                color: #212529;
+            > div {
+                flex-basis: 40%;
             }
         }
     }
 
-    .ap__saved_result {
-        margin-top: 40px;
+    .ap__existed_edit {
+        padding: 10px;
 
-        .sr__info_section {
-            margin: 20px 0;
+        > p {
+            font-weight: 700;
+        }
+
+        .ee__pattern_status {
+            margin-top: 20px;
             display: flex;
             justify-content: space-between;
 
-            .is__label_value {
+            .ps__label_value {
+                &.lv__pattern {
+                    flex-basis: 42%;
+                }
+
+                &.lv__up {
+                    flex-basis: 27%;
+
+                    span {
+                        color: #71c016;
+                    }
+                }
+
+                &.lv__down {
+                    flex-basis: 27%;
+
+                    span {
+                        color: #ff4747;
+                    }
+                }
+
                 > p {
                     &:first-child {
-                        margin-bottom: 10px;
-                        font-size: 14px;
+                        margin-bottom: 4px;
+                        font-size: 12px;
+                        font-weight: 700;
                     }
+                }
 
-                    &:last-child > span {
-                        color: #70d96e;
-                    }
+                > div {
+                    height: 36px;
+                    padding: 0 8px;
+                    display: flex;
+                    align-items: center;
+                    border: 2px solid #1e1e2f;
+                    border-radius: 4px;
                 }
             }
         }
 
-        .sr__buttons_section {
-            display: flex;
-            justify-content: space-between;
+        .ee__buttons_section {
+            margin-top: 20px;
 
-            .bs__button {
-                padding: 10px;
-                flex-basis: 20%;
+            .bs__edit_buttons {
+                margin-bottom: 10px;
                 display: flex;
-                align-items: center;
-                justify-content: center;
-                background-color: #f8f9fa;
-                border-radius: 4px;
-                cursor: pointer;
+                justify-content: space-between;
 
-                &:hover {
-                    background-color: darken(#f8f9fa, 20%);
-                }
-
-                > p {
-                    color: #212529;
+                > div {
+                    flex-basis: 32%;
                 }
             }
         }

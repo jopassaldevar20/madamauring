@@ -30,8 +30,11 @@ export default {
 
 <style scoped lang="scss">
 .the_toast_wrapper {
-    padding: 10px 0;
-    text-align: center;
+    width: 100%;
+    height: 40px;
+    position: fixed;
+    top: 0;
+    left: 0;
     cursor: pointer;
 
     &.success {
