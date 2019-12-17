@@ -6,61 +6,28 @@
             <p>{{ orderList.length }}</p>
         </div>
 
-        <div
-            v-for="(order, index) in orderList"
-            :key="`trade-${index}`"
-            class="ol__trade_info"
-            @click="selectOrder(index)"
-        >
-            <span v-if="order.selected"></span>
-
-            <div class="ti__date_symbol_pattern">
-                <div class="dsp__text">
-                    <p class="t__big">{{ constructTime(order.date) }}</p>
-
-                    <p class="t__small">{{ constructDate(order.date) }}</p>
-                </div>
-
-                <div class="dsp__text">
-                    <p class="t__big">{{ order.symbol }}</p>
-
-                    <p class="t__small">{{ order.pattern }}</p>
-                </div>
-            </div>
-
-            <div class="ti__type_buttons">
-                <div :class="{ 'tb__type': true, 'tb__buy': order.type === 'BUY', 'tb__sell': order.type === 'SELL'}">
-                    <span></span>
-
-                    <p>{{ order.type.toUpperCase() }}</p>
-                </div>
-
-                <div class="tb__buttons">
-                    <div class="base_button orange" @click="isWinLose($event, index, 'LOSE')">
-                        <p>LOSE</p>
-                    </div>
-
-                    <div class="base_button blue" @click="isWinLose($event, index, 'WIN')">
-                        <p>WIN</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <OrderCard
+            v-for="(item, index) in orderList"
+            :key="`history-${index}`"
+            :order="item"
+            :hasButtons="true"
+            @result="isWinLose($event, index)"
+        />
     </BaseCard>
 </template>
 
 <script>
 import { mapState, mapActions, mapMutations } from 'vuex';
 
-import { monthNames } from '@/common/collections';
-
 import BaseCard from '@/components/BaseCard';
+import OrderCard from '@/components/OrderCard';
 
 export default {
     name: 'OrderList',
 
     components: {
-        BaseCard
+        BaseCard,
+        OrderCard
     },
 
     computed: {
@@ -80,49 +47,19 @@ export default {
             'isPatternExist',
             'updatePattern',
             'deleteOrder',
-            'updateOrderResult'
+            'updateOrderResult',
+            'appendNewHistory'
         ]),
 
-        constructTime (orderDate) {
-            let h = orderDate.getHours().toString();
-            let m = orderDate.getMinutes().toString();
-
-            if (h.length < 2) { h = `0${h}`; }
-            if (m.length < 2) { m = `0${m}`; }
-
-            return `${h}:${m}`;
-        },
-
-        constructDate (orderDate) {
-            let finalDate = '';
-
-            finalDate += orderDate.getDate();
-            finalDate += ` ${monthNames[orderDate.getMonth()].substring(0, 3).toUpperCase()}. `;
-            finalDate += orderDate.getFullYear();
-
-            return finalDate;
-        },
-
-        selectOrder (index) {
-            const removeReference = [...this.orderList];
-            const item = { ...removeReference[index] };
-
-            item.selected = !item.selected;
-            removeReference.splice(index, 1, item);
-
-            this.updateOrderList({ orderList: removeReference });
-        },
-
-        async isWinLose (e, index, result) {
-            e.stopPropagation();
-
+        async isWinLose (response, index) {
             this.updateBlockUi({ blockUi: true });
+
             const selectedOrder = this.orderList[index];
             const exist = await this.isPatternExist({ pattern: selectedOrder.pattern });
 
             if (exist) {
-                if (exist.up !== 0 || exist.down !== 0) {
-                    await this.updateOrderResult({ isRight: result === 'WIN' });
+                if (exist.up !== exist.down) {
+                    await this.updateOrderResult({ isRight: response === 'WIN' });
                 }
 
                 const handleUpdate = async (direction) => {
@@ -133,11 +70,19 @@ export default {
                 };
 
                 if (selectedOrder.type === 'BUY') {
-                    await handleUpdate(result === 'WIN' ? 'UP' : 'DOWN');
+                    await handleUpdate(response === 'WIN' ? 'UP' : 'DOWN');
                 } else if (selectedOrder.type === 'SELL') {
-                    await handleUpdate(result === 'WIN' ? 'DOWN' : 'UP');
+                    await handleUpdate(response === 'WIN' ? 'DOWN' : 'UP');
                 }
             }
+
+            await this.appendNewHistory({
+                pattern: selectedOrder.pattern,
+                type: selectedOrder.type,
+                symbol: selectedOrder.symbol,
+                result: response,
+                createdAt: selectedOrder.date
+            });
 
             await this.deleteOrder({ rowNumber: selectedOrder.rowNumber });
 

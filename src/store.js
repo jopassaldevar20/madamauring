@@ -23,7 +23,8 @@ export default new Vuex.Store({
         orderList: [],
         rightOrder: 0,
         wrongOrder: 0,
-        orderResultRowNumber: null
+        orderResultRowNumber: null,
+        orderHistory: []
     },
 
     mutations: {
@@ -74,6 +75,10 @@ export default new Vuex.Store({
 
         updateOrderResultRowNumber (state, payload) {
             state.orderResultRowNumber = payload.orderResultRowNumber;
+        },
+
+        updateOrderHistory (state, payload) {
+            state.orderHistory = [...payload.orderHistory];
         }
     },
 
@@ -133,8 +138,7 @@ export default new Vuex.Store({
                                 type: row[1],
                                 symbol: row[2],
                                 date: new Date(row[3]),
-                                rowNumber: i + 2,
-                                selected: false
+                                rowNumber: i + 2
                             });
                         }
                     }
@@ -325,6 +329,64 @@ export default new Vuex.Store({
                 } while (startOver);
 
                 return patternData ? { ...patternData } : null;
+            } catch (error) {
+                commit('updateToast', { type: 'failed', message: error });
+                return false;
+            }
+        },
+
+        async getAllOrderHistory ({ commit, state }) {
+            try {
+                const response = await window.gapi.client.sheets.spreadsheets.values.get({
+                    spreadsheetId: state.mahiwaga.bola,
+                    range: 'History!A2:E1000'
+                });
+
+                const range = response.result;
+                let orderHistory = [];
+
+                if (range.values && range.values.length > 0) {
+                    for (let i = 0; i < range.values.length; i++) {
+                        const row = range.values[i];
+
+                        if (row.length > 0) {
+                            orderHistory.push({
+                                pattern: row[0],
+                                type: row[1],
+                                symbol: row[2],
+                                result: row[3],
+                                date: new Date(row[4]),
+                                rowNumber: i + 2
+                            });
+                        }
+                    }
+                }
+
+                commit('updateOrderHistory', { orderHistory: [...tools.sortArrayByKey(orderHistory, 'date')] });
+            } catch (error) {
+                commit('updateToast', { type: 'failed', message: error });
+            }
+        },
+
+        async appendNewHistory ({ commit, state }, { pattern, type, symbol, result, createdAt }) {
+            try {
+                const response = await window.gapi.client.sheets.spreadsheets.values.append({
+                    spreadsheetId: state.mahiwaga.bola,
+                    range: 'History!A2',
+                    valueInputOption: 'RAW'
+                }, {
+                    'majorDimension': 'ROWS',
+                    'values': [[pattern, type, symbol, result, createdAt]]
+                });
+
+                const splitString = response.result.updates.updatedRange.split(':');
+                const rowNumber = Number(splitString[1].substr(1));
+                const date = new Date(createdAt);
+                const newOrder = { pattern, type, symbol, result, date, rowNumber };
+                const concatHistory = [...state.orderHistory, newOrder];
+
+                commit('updateOrderHistory', { orderHistory: [...tools.sortArrayByKey(concatHistory, 'date')] });
+                return response;
             } catch (error) {
                 commit('updateToast', { type: 'failed', message: error });
                 return false;

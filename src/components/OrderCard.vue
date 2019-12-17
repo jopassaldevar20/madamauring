@@ -1,6 +1,10 @@
 <template>
-    <div class="order_card_wrapper">
-        <span v-if="order.selected"></span>
+    <div class="order_card_wrapper" @click="selectOrder">
+        <span v-if="isHighlight"></span>
+
+        <div v-if="!hasButtons" class="oc__remove">
+            <i class="material-icons">close</i>
+        </div>
 
         <div class="oc__date_symbol_pattern">
             <div class="dsp__text">
@@ -20,17 +24,21 @@
             <div :class="{ 'tb__type': true, 'tb__buy': order.type === 'BUY', 'tb__sell': order.type === 'SELL'}">
                 <span></span>
 
-                <p>{{ order.type.toUpperCase() }}</p>
+                <p>{{ order.type }}</p>
             </div>
 
-            <div class="tb__buttons">
-                <div class="base_button orange" @click="isWinLose($event, index, 'LOSE')">
+            <div v-if="hasButtons" class="tb__buttons">
+                <div class="base_button orange" @click="handleButtons($event, 'LOSE')">
                     <p>LOSE</p>
                 </div>
 
-                <div class="base_button blue" @click="isWinLose($event, index, 'WIN')">
+                <div class="base_button blue" @click="handleButtons($event, 'WIN')">
                     <p>WIN</p>
                 </div>
+            </div>
+
+            <div v-else class="tb__result">
+                <p :class="{ 'r__is_win': order.result === 'WIN' }">{{ order.result }}</p>
             </div>
         </div>
     </div>
@@ -46,7 +54,18 @@ export default {
         order: {
             type: Object,
             required: true
+        },
+
+        hasButtons: {
+            type: Boolean,
+            required: true
         }
+    },
+
+    data () {
+        return {
+            isHighlight: false
+        };
     },
 
     methods: {
@@ -70,15 +89,15 @@ export default {
             return finalDate;
         },
 
-        selectOrder (index) {
-            const removeReference = [...this.orderList];
-            const item = { ...removeReference[index] };
-
-            item.selected = !item.selected;
-            removeReference.splice(index, 1, item);
-
-            this.updateOrderList({ orderList: removeReference });
+        selectOrder () {
+            this.isHighlight = !this.isHighlight;
         },
+
+        async handleButtons (e, result) {
+            e.stopPropagation();
+
+            this.$emit('result', result);
+        }
     }
 };
 </script>
@@ -102,6 +121,15 @@ export default {
         left: 0;
         display: inline-block;
         background-color: #4d83ff;
+    }
+
+    .oc__remove {
+        margin-bottom: 10px;
+        display: flex;
+
+        > i:hover {
+            color: #4d83ff;
+        }
     }
 
     .oc__date_symbol_pattern {
@@ -163,6 +191,16 @@ export default {
 
             > div {
                 width: 100px;
+            }
+        }
+
+        .tb__result > p {
+            color: #ff4747;
+            font-size: 18px;
+            font-weight: 700;
+
+            &.r__is_win {
+                color: #71c016;
             }
         }
     }
