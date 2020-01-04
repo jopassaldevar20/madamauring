@@ -15,6 +15,8 @@
                 <AddOrder />
 
                 <AddPattern />
+
+                <PatternStats />
             </div>
 
             <div>
@@ -38,6 +40,7 @@ import OrderHistory from '@/parts/OrderHistory';
 import OrderList from '@/parts/OrderList';
 import OrderResult from '@/parts/OrderResult';
 import PatternConverter from '@/parts/PatternConverter';
+import PatternStats from '@/parts/PatternStats';
 import SearchResult from '@/parts/SearchResult';
 
 export default {
@@ -51,6 +54,7 @@ export default {
         OrderList,
         OrderResult,
         PatternConverter,
+        PatternStats,
         SearchResult
     },
 

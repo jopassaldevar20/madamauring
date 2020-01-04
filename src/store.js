@@ -24,7 +24,9 @@ export default new Vuex.Store({
         rightOrder: 0,
         wrongOrder: 0,
         orderResultRowNumber: null,
-        orderHistory: []
+        orderHistory: [],
+        highestUpDown: { up: 0, down: 0 },
+        equalUpDown: []
     },
 
     mutations: {
@@ -79,6 +81,14 @@ export default new Vuex.Store({
 
         updateOrderHistory (state, payload) {
             state.orderHistory = [...payload.orderHistory];
+        },
+
+        updateHighestUpDown (state, payload) {
+            state.highestUpDown = { ...payload.highestUpDown };
+        },
+
+        updateEqualUpDown(state, payload) {
+            state.equalUpDown = [ ...payload.equalUpDown ];
         }
     },
 
@@ -118,11 +128,69 @@ export default new Vuex.Store({
             window.gapi.auth2.getAuthInstance().signOut();
         },
 
+        async getAllPattern ({ commit, state }) {
+            try {
+                const response = await window.gapi.client.sheets.spreadsheets.values.get({
+                    spreadsheetId: state.mahiwaga.bola,
+                    range: 'Pattern!A2:C1000'
+                });
+
+                const range = response.result;
+                let highestNumber = 0;
+                let highestCombo = { up: 0, down: 0 };
+                let existedNumber = [];
+                let existedNumberCounter = {};
+
+                if (range.values && range.values.length > 0) {
+                    for (let i = 0; i < range.values.length; i++) {
+                        const row = range.values[i];
+
+                        if (row.length > 0) {
+                            const up = Number(row[1]);
+                            const down = Number(row[2]);
+                            
+                            if (up > highestNumber) {
+                                highestCombo.up = up;
+                                highestCombo.down = down;
+
+                                highestNumber = up;
+                            }
+
+                            if (down > highestNumber) {
+                                highestCombo.up = up;
+                                highestCombo.down = down;
+
+                                highestNumber = down;
+                            }
+                            
+                            if (up === down) {
+                                const existed = existedNumber.filter(x => x === up);
+
+                                if (existed.length > 0) {
+                                    existedNumberCounter[up]++;
+                                } else {
+                                    existedNumber.push(up);
+                                    existedNumberCounter[up] = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                const entries = Object.entries(existedNumberCounter);
+
+                commit('updateHighestUpDown', { highestUpDown: highestCombo });
+                commit('updateEqualUpDown', { equalUpDown: entries });
+            } catch (error) {
+                commit('updateToast', { type: 'failed', message: error });
+            }
+        },
+
         async getAllOrdered ({ commit, state }) {
             try {
                 const response = await window.gapi.client.sheets.spreadsheets.values.get({
                     spreadsheetId: state.mahiwaga.bola,
-                    range: 'Order!A2:D1000'
+                    range: 'Order!A2:F1000'
                 });
 
                 const range = response.result;
@@ -138,6 +206,8 @@ export default new Vuex.Store({
                                 type: row[1],
                                 symbol: row[2],
                                 date: new Date(row[3]),
+                                up: row[4],
+                                down: row[5],
                                 rowNumber: i + 2
                             });
                         }
@@ -150,7 +220,7 @@ export default new Vuex.Store({
             }
         },
 
-        async appendNewOrder ({ commit, state }, { pattern, type, symbol, createdAt }) {
+        async appendNewOrder ({ commit, state }, { pattern, type, symbol, createdAt, up, down }) {
             try {
                 const response = await window.gapi.client.sheets.spreadsheets.values.append({
                     spreadsheetId: state.mahiwaga.bola,
@@ -158,13 +228,13 @@ export default new Vuex.Store({
                     valueInputOption: 'RAW'
                 }, {
                     'majorDimension': 'ROWS',
-                    'values': [[pattern, type, symbol, createdAt]]
+                    'values': [[pattern, type, symbol, createdAt, up, down]]
                 });
 
                 const splitString = response.result.updates.updatedRange.split(':');
                 const rowNumber = Number(splitString[1].substr(1));
                 const date = new Date(createdAt);
-                const newOrder = { pattern, type, symbol, date, rowNumber };
+                const newOrder = { pattern, type, symbol, date, up, down, rowNumber };
 
                 commit('updateOrderList', { orderList: [...state.orderList, newOrder] });
                 return response;
@@ -214,7 +284,7 @@ export default new Vuex.Store({
 
         async deleteOrder ({ commit, state }, { rowNumber }) {
             try {
-                const range = `Order!A${rowNumber}:D${rowNumber}`;
+                const range = `Order!A${rowNumber}:F${rowNumber}`;
 
                 await window.gapi.client.sheets.spreadsheets.values.clear({
                     spreadsheetId: state.mahiwaga.bola,
@@ -350,7 +420,7 @@ export default new Vuex.Store({
                         const row = range.values[i];
 
                         if (row.length > 0) {
-                            orderHistory.push({
+                            orderHistory.unshift({
                                 pattern: row[0],
                                 type: row[1],
                                 symbol: row[2],
@@ -362,7 +432,7 @@ export default new Vuex.Store({
                     }
                 }
 
-                commit('updateOrderHistory', { orderHistory: [...tools.sortArrayByKey(orderHistory, 'date')] });
+                commit('updateOrderHistory', { orderHistory });
             } catch (error) {
                 commit('updateToast', { type: 'failed', message: error });
             }
@@ -383,9 +453,9 @@ export default new Vuex.Store({
                 const rowNumber = Number(splitString[1].substr(1));
                 const date = new Date(createdAt);
                 const newOrder = { pattern, type, symbol, result, date, rowNumber };
-                const concatHistory = [...state.orderHistory, newOrder];
+                const concatHistory = [newOrder, ...state.orderHistory];
 
-                commit('updateOrderHistory', { orderHistory: [...tools.sortArrayByKey(concatHistory, 'date')] });
+                commit('updateOrderHistory', { orderHistory: concatHistory });
                 return response;
             } catch (error) {
                 commit('updateToast', { type: 'failed', message: error });

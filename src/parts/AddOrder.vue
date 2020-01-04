@@ -88,7 +88,7 @@ export default {
     },
 
     computed: {
-        ...mapState(['convertedPattern', 'searchPattern']),
+        ...mapState(['convertedPattern', 'searchPattern', 'searchBull', 'searchBear']),
 
         constructDate () {
             return `${monthNames[this.month]} ${this.day}, ${this.year}`;
@@ -142,6 +142,7 @@ export default {
         async handleSubmit () {
             if (this.searchPattern !== '') {
                 this.updateBlockUi({ blockUi: true });
+
                 const passed = this.validateInputs();
 
                 if (passed) {
@@ -149,14 +150,17 @@ export default {
                         pattern: this.pattern,
                         type: this.type,
                         symbol: this.symbol,
-                        createdAt: new Date(this.year, this.month, this.day, this.hour, this.minute)
+                        createdAt: new Date(this.year, this.month, this.day, this.hour, this.minute),
+                        up: this.searchBull,
+                        down: this.searchBear
                     });
+                        
+                    this.pattern = '';
+                    this.updateSearchPattern({ searchPattern: '' });
+                    this.updateSearchBull({ searchBull: 0 });
+                    this.updateSearchBear({ searchBear: 0 });
                 }
-
-                this.pattern = '';
-                this.updateSearchPattern({ searchPattern: '' });
-                this.updateSearchBull({ searchBull: 0 });
-                this.updateSearchBear({ searchBear: 0 });
+                
                 this.updateBlockUi({ blockUi: false });
             }
         }

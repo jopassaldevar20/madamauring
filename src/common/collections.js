@@ -32,7 +32,5 @@ export const tradeSymbol = [
     'EURUSD',
     'USDCAD',
     'USDJPY',
-    'NZDUSD',
-    'AUDUSD',
-    'GBPUSD'
+    'AUDUSD'
 ];

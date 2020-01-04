@@ -2,21 +2,29 @@
     <div class="order_card_wrapper" @click="selectOrder">
         <span v-if="isHighlight"></span>
 
-        <div v-if="!hasButtons" class="oc__remove">
-            <i class="material-icons">close</i>
-        </div>
-
         <div class="oc__date_symbol_pattern">
             <div class="dsp__text">
                 <p class="t__big">{{ constructTime(order.date) }}</p>
 
-                <p class="t__small">{{ constructDate(order.date) }}</p>
+                <p>{{ constructDate(order.date) }}</p>
             </div>
 
             <div class="dsp__text">
                 <p class="t__big">{{ order.symbol }}</p>
 
-                <p class="t__small">{{ order.pattern }}</p>
+                <div class="t__pattern_up_down">
+                    <p>{{ order.pattern }}</p>
+
+                    <div v-if="hasButtons" class="pud__icon_stats">
+                        <i class="material-icons">poll</i>
+
+                        <p>
+                            <span :class="{ 'is__green': order.up > order.down }">{{ order.up || 0 }}</span>
+                            <span>:</span>
+                            <span :class="{ 'is__red': order.up < order.down }">{{ order.down || 0 }}</span>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -142,13 +150,35 @@ export default {
             }
 
             .t__big {
-                margin-bottom: 4px;
+                margin-bottom: 2px;
                 font-size: 30px;
                 font-weight: 700;
             }
 
-            .t__small {
-                font-size: 14px;
+            .t__pattern_up_down {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+
+                .pud__icon_stats {
+                    display: flex;
+                    align-items: center;
+
+                    > i {
+                        margin: 0 4px 0 10px;
+                        font-size: 16px;
+                    }
+
+                    > p {
+                        .is__green {
+                           color: #71c016;
+                        }
+
+                        .is__red {
+                            color: #ff4747;
+                        }
+                    }
+                }
             }
         }
     }

@@ -8,7 +8,7 @@
 
         <OrderCard
             v-for="(item, index) in orderList"
-            :key="`history-${index}`"
+            :key="`history-${index}-${item.pattern}`"
             :order="item"
             :hasButtons="true"
             @result="isWinLose($event, index)"
