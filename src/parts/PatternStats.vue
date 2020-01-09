@@ -17,6 +17,14 @@
         </div>
 
         <div class="ps__equal_graph">
+            <div class="eg__total_pattern">
+                <p class="tp__label">PATTERN</p>
+                
+                <i class="material-icons">double_arrow</i>
+                
+                <p>{{ totalPattern }}</p>
+            </div>
+
             <div class="eg__color_value">
                 <div
                     v-for="(value, index) in equalUpDown" 
@@ -34,9 +42,11 @@
             </div>
             
             <div class="eg__total">
-                <p>TOTAL:</p>
+                <p class="t__label">TOTAL</p>
 
-                <p class="t__value">{{ totalEqual }}</p>
+                <i class="material-icons">double_arrow</i>
+
+                <p>{{ totalEqual }}</p>
             </div>
 
             <div class="eg__graph">
@@ -49,6 +59,10 @@
                     <span v-for="bar in (index + 1)" :key="`bar-${index}-${bar}`"></span>
                 </div>
             </div>
+        </div>
+            
+        <div class="base_button blue" @click="getAllPattern">
+            <p>UPDATES</p>
         </div>
     </BaseCard>
 </template>
@@ -69,7 +83,8 @@ export default {
         ...mapState([
             'highestUpDown',
             'equalUpDown',
-            'isSignedIn'
+            'isSignedIn',
+            'totalPattern'
         ]),
 
         totalEqual () {
@@ -143,6 +158,23 @@ export default {
     }
 
     .ps__equal_graph {
+        .eg__total_pattern {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+
+            .tp__label {
+                font-size: 12px;
+                font-weight: 700;
+                line-height: 12px;
+            }
+            
+            > i {
+                margin: 0 4px;
+                font-size: 16px;
+            }
+        }
+
         .eg__color_value {
             padding: 10px;
             display: flex;
@@ -182,19 +214,19 @@ export default {
         }
 
         .eg__total {
-            padding: 0 10px;
-            font-size: 14px;
-            line-height: 14px;
+            padding: 10px;
             display: flex;
             align-items: center;
 
-            .t__value {
-                margin-left: 4px;
-                position: relative;
-                top: 1px;
+            .t__label {
                 font-size: 12px;
                 font-weight: 700;
                 line-height: 12px;
+            }
+
+            > i {
+                margin: 0 4px;
+                font-size: 16px;
             }
         }
 
@@ -219,6 +251,10 @@ export default {
                 }
             }
         }
+    }
+
+    .base_button {
+        margin: 20px 10px 10px;
     }
 }
 </style>

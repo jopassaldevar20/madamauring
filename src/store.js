@@ -26,7 +26,8 @@ export default new Vuex.Store({
         orderResultRowNumber: null,
         orderHistory: [],
         highestUpDown: { up: 0, down: 0 },
-        equalUpDown: []
+        equalUpDown: [],
+        totalPattern: 0
     },
 
     mutations: {
@@ -87,8 +88,12 @@ export default new Vuex.Store({
             state.highestUpDown = { ...payload.highestUpDown };
         },
 
-        updateEqualUpDown(state, payload) {
+        updateEqualUpDown (state, payload) {
             state.equalUpDown = [ ...payload.equalUpDown ];
+        },
+
+        updateTotalPattern (state, payload) {
+            state.totalPattern = payload.totalPattern
         }
     },
 
@@ -175,6 +180,8 @@ export default new Vuex.Store({
                             }
                         }
                     }
+
+                    commit('updateTotalPattern', { totalPattern: range.values.length });
                 }
                 
                 const entries = Object.entries(existedNumberCounter);
