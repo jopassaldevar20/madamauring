@@ -1,20 +1,42 @@
 <template>
     <BaseCard class="order_result_wrapper">
         <div class="or__result_bar">
-            <span :style="{ width: getRightPercent }"></span>
+            <span :style="{ width: `${getRightPercent}%` }"></span>
         </div>
 
-        <div class="or__icon_value">
-            <div>
-                <i class="material-icons mood">mood</i>
+        <div class="or__value_icon">
+            <div class="vi__value_diff">
+                <div class="vd__right_wrong">
+                    <div>
+                        <span class="rw__right"></span>
 
-                <p>{{ rightOrder }}</p>
+                        <p>{{ rightOrder }}</p>
+                    </div>
+
+                    <div>
+                        <span class="rw__wrong"></span>
+
+                        <p>{{ wrongOrder }}</p>
+                    </div>
+                </div>
+
+                <div class="vd__diff">
+                    <p class="d__label">DIFFERENCE</p>
+
+                    <i class="material-icons">double_arrow</i>
+
+                    <p>{{ rightWrongDiff }}</p>
+                </div>
             </div>
+            
+            <div class="vi__percent_icon">
+                <p>{{ getRightPercent }}<span>%</span></p>
 
-            <div>
-                <i class="material-icons mood_bad">mood_bad</i>
-
-                <p>{{ wrongOrder }}</p>
+                <i :class="{
+                    'material-icons': true,
+                    'pi__red': selectIcon === 'mood_bad' || selectIcon === 'sentiment_dissatisfied',
+                    'pi__green': selectIcon === 'sentiment_satisfied' || selectIcon === 'mood',
+                }">{{ selectIcon }}</i>
             </div>
         </div>
     </BaseCard>
@@ -36,12 +58,36 @@ export default {
         ...mapState(['isSignedIn', 'rightOrder', 'wrongOrder']),
 
         getRightPercent () {
-            return `${this.rightOrder / (this.rightOrder + this.wrongOrder) * 100}%`;
+            return Math.round(this.rightOrder / (this.rightOrder + this.wrongOrder) * 100) || 0;
+        },
+
+        rightWrongDiff () {
+            return this.rightOrder - this.wrongOrder;
+        },
+
+        selectIcon () {
+            return this.generateIcon(this.getRightPercent);
         }
     },
 
     methods: {
-        ...mapActions(['getMisc'])
+        ...mapActions(['getMisc']),
+
+        generateIcon (percent) {            
+            if (percent > 75) {
+                return 'mood';
+            }
+
+            if (percent > 50) {
+                return 'sentiment_satisfied';
+            }
+
+            if (percent > 25) {
+                return 'sentiment_dissatisfied';
+            }
+
+            return 'mood_bad';
+        }
     },
 
     watch: {
@@ -75,30 +121,88 @@ export default {
         }
     }
 
-    .or__icon_value {
-        margin-top: 10px;
+    .or__value_icon {
+        margin-top: 20px;
         display: flex;
+        align-items: center;
         justify-content: space-around;
 
         > div {
-            flex-basis: 40%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-basis: 50%;
+        }
 
-            > i {
-                &.mood {
-                    color: #71c016;
-                }
+        .vi__value_diff {
+            .vd__right_wrong {
+                display: flex;
 
-                &.mood_bad {
-                    color: #ff4747;
+                > div {
+                    flex-basis: 40%;
+                    display: flex;
+                    align-items: center;
+
+                    > span {
+                        width: 2px;
+                        height: 26px;
+                        display: block;
+
+                        &.rw__right {
+                            background-color: #71c016;
+                        }
+                        
+                        &.rw__wrong {
+                            background-color: #ff4747;
+                        }
+                    }
+
+                    > p {
+                        margin-left: 6px;
+                        font-weight: 700;
+                    }
                 }
             }
 
+            .vd__diff {
+                margin-top: 20px;
+                display: flex;
+                align-items: center;
+
+                .d__label {
+                    font-size: 12px;
+                    font-weight: 700;
+                    line-height: 12px;
+                }
+                
+                > i {
+                    margin: 0 6px;
+                    font-size: 16px;
+                }
+            }
+        }
+
+        .vi__percent_icon {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+
             > p {
-                margin-left: 10px;
-                font-weight: 700;
+                margin-bottom: 2px;
+                font-size: 16px;
+
+                > span {
+                    font-size: 10px;
+                }
+            }
+
+            > i {
+                font-size: 60px;
+
+                &.pi__red {
+                    color: #ff4747;
+                }
+                
+                &.pi__green {
+                    color: #71c016;
+                }
             }
         }
     }

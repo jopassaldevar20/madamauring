@@ -112,9 +112,17 @@ export default {
                 const exist = await this.isPatternExist({ pattern: this.pattern });
 
                 if (!exist) {
-                    await this.appendNewPattern({ pattern: this.pattern, up: 0, down: 0 });
+                    const newPattern = await this.appendNewPattern({
+                        pattern: this.pattern,
+                        up: 0,
+                        down: 0
+                    });
+
+                    const splitString = newPattern.result.updates.updatedRange.split(':');
+                    const rowNumber = Number(splitString[1].substr(1));
 
                     this.isExist = false;
+                    this.savedRowNumber = rowNumber;
                     this.savedPattern = this.pattern;
                     this.savedUp = 0;
                     this.saveDown = 0;
@@ -160,7 +168,7 @@ export default {
             this.isExist = false;
             this.pattern = '';
             this.savedRowNumber = 0;
-            this.savedPattern = '';
+            this.savedPattern = 'XXXXXXXXXX';
             this.savedUp = 0;
             this.saveDown = 0;
             this.upPlus = 0;

@@ -18,7 +18,7 @@
 
         <div class="ps__equal_graph">
             <div class="eg__total_pattern">
-                <p class="tp__label">PATTERN</p>
+                <p class="tp__label">PATTERNS</p>
                 
                 <i class="material-icons">double_arrow</i>
                 
@@ -62,7 +62,7 @@
         </div>
             
         <div class="base_button blue" @click="getAllPattern">
-            <p>UPDATES</p>
+            <p>UPDATE</p>
         </div>
     </BaseCard>
 </template>

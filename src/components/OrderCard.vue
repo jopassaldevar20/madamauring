@@ -98,7 +98,9 @@ export default {
         },
 
         selectOrder () {
-            this.isHighlight = !this.isHighlight;
+            if (this.hasButtons) {
+                this.isHighlight = !this.isHighlight;
+            }
         },
 
         async handleButtons (e, result) {

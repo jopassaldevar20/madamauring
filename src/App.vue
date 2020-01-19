@@ -50,6 +50,16 @@ input {
     }
 }
 
+textarea {
+    width: 100%;
+    padding: 10px;
+    color: #b1b1b5;
+    background-color: #1e1e2f;
+    border: 0;
+    border-radius: 4px;
+    outline: none;
+}
+
 p {
     letter-spacing: .5px;
 }

@@ -1,13 +1,9 @@
 <template>
     <div class="ang_kapalaran_wrapper">
         <div class="ak__input_container">
-            <input v-model="firstInput" />
+            <textarea v-model="text" rows="5"></textarea>
 
-            <input v-model="secondInput" />
-
-            <input v-model="thirdInput" />
-
-            <div @click="handleHula">
+            <div class="base_button blue" @click="handleHula">
                 <p>Hula</p>
             </div>
         </div>
@@ -22,17 +18,17 @@ export default {
 
     data () {
         return {
-            firstInput: '',
-            secondInput: '',
-            thirdInput: ''
+            text: ''
         };
     },
 
     methods: {
         handleHula () {
-            tools.setCookie('_baraha', this.firstInput);
-            tools.setCookie('_palad', this.secondInput);
-            tools.setCookie('_bola', this.thirdInput);
+            const splitText = this.text.split(' || ');
+
+            tools.setCookie('_baraha', splitText[0]);
+            tools.setCookie('_palad', splitText[1]);
+            tools.setCookie('_bola', splitText[2]);
 
             this.$router.push({ name: 'mahiwagang-bola' });
         }
@@ -47,37 +43,13 @@ export default {
 
     .ak__input_container {
         width: 600px;
-        padding: 30px;
-        background-color: #131633;
-        border-radius: 6px;
+        padding: 10px;
+        margin-top: 50px;
+        background-color: #26293b;
+        border: 1px solid #313452;        
 
-        > input {
-            margin-bottom: 20px;
-        }
-
-        > div {
-            width: 200px;
-            padding: 10px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            cursor: pointer;
-
-            &:hover:not(.bc__submit_disabled) {
-                background-color: darken(#f8f9fa, 20%);
-            }
-
-            &.bc__submit_disabled {
-                opacity: .5;
-                cursor: not-allowed;
-            }
-
-            > p {
-                color: #212529;
-            }
+        > textarea {
+            margin-bottom: 10px;
         }
     }
 }

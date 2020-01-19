@@ -93,7 +93,7 @@ export default new Vuex.Store({
         },
 
         updateTotalPattern (state, payload) {
-            state.totalPattern = payload.totalPattern
+            state.totalPattern = payload.totalPattern;
         }
     },
 
@@ -153,7 +153,7 @@ export default new Vuex.Store({
                         if (row.length > 0) {
                             const up = Number(row[1]);
                             const down = Number(row[2]);
-                            
+
                             if (up > highestNumber) {
                                 highestCombo.up = up;
                                 highestCombo.down = down;
@@ -167,7 +167,7 @@ export default new Vuex.Store({
 
                                 highestNumber = down;
                             }
-                            
+
                             if (up === down) {
                                 const existed = existedNumber.filter(x => x === up);
 
@@ -183,7 +183,7 @@ export default new Vuex.Store({
 
                     commit('updateTotalPattern', { totalPattern: range.values.length });
                 }
-                
+
                 const entries = Object.entries(existedNumberCounter);
 
                 commit('updateHighestUpDown', { highestUpDown: highestCombo });
