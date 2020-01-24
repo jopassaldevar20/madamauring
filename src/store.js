@@ -27,7 +27,8 @@ export default new Vuex.Store({
         orderHistory: [],
         highestUpDown: { up: 0, down: 0 },
         equalUpDown: [],
-        totalPattern: 0
+        totalPattern: 0,
+        similarPatterns: []
     },
 
     mutations: {
@@ -94,6 +95,10 @@ export default new Vuex.Store({
 
         updateTotalPattern (state, payload) {
             state.totalPattern = payload.totalPattern;
+        },
+
+        updateSimilarPatterns(state, payload) {
+            state.similarPatterns = payload.similarPatterns;
         }
     },
 
@@ -145,6 +150,8 @@ export default new Vuex.Store({
                 let highestCombo = { up: 0, down: 0 };
                 let existedNumber = [];
                 let existedNumberCounter = {};
+                let existedPair = [];
+                let pairHolder = {};
 
                 if (range.values && range.values.length > 0) {
                     for (let i = 0; i < range.values.length; i++) {
@@ -178,6 +185,16 @@ export default new Vuex.Store({
                                     existedNumberCounter[up] = 1;
                                 }
                             }
+
+                            const toString = `${up}${down}`;
+                            const pair = existedPair.filter(x => x === toString);
+
+                            if (pair.length > 0) {
+                                pairHolder[toString].times++;
+                            } else {
+                                existedPair.push(toString);
+                                pairHolder[toString] = { up, down, times: 1 };
+                            }
                         }
                     }
 
@@ -185,9 +202,11 @@ export default new Vuex.Store({
                 }
 
                 const entries = Object.entries(existedNumberCounter);
+                const values = Object.values(pairHolder);
 
                 commit('updateHighestUpDown', { highestUpDown: highestCombo });
                 commit('updateEqualUpDown', { equalUpDown: entries });
+                commit('updateSimilarPatterns', { similarPatterns: values });
             } catch (error) {
                 commit('updateToast', { type: 'failed', message: error });
             }

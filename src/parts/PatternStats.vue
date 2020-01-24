@@ -64,6 +64,25 @@
         <div class="base_button blue" @click="getAllPattern">
             <p>UPDATE</p>
         </div>
+
+        <div class="ps__pattern_results">
+            <div class="table_header">
+                <p>UP</p>
+
+                <p>DOWN</p>
+
+                <p>TIMES</p>
+            </div>
+
+            <div v-for="item in similarPatterns" :key="`pair-${item.up}-${item.down}`">
+                <p>{{ item.up }}</p>
+
+                <p>{{ item.down }}</p>
+
+                <p>{{ item.times }}</p>
+            </div>
+
+        </div>
     </BaseCard>
 </template>
 
@@ -84,7 +103,8 @@ export default {
             'highestUpDown',
             'equalUpDown',
             'isSignedIn',
-            'totalPattern'
+            'totalPattern',
+            'similarPatterns'
         ]),
 
         totalEqual () {
@@ -255,6 +275,29 @@ export default {
 
     .base_button {
         margin: 20px 10px 10px;
+    }
+
+    .ps__pattern_results {
+        padding: 10px;
+
+        > div {
+            margin-bottom: 1px;
+            display: flex;
+            justify-content: space-between;
+
+            &.table_header {
+                > p {
+                    font-weight: 700;
+                }
+            }
+
+            > p {
+                padding: 4px;
+                text-align: center;
+                flex: 0 0 33%;
+                border: 1px solid #1e1e2f;
+            }
+        }
     }
 }
 </style>
