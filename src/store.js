@@ -150,8 +150,8 @@ export default new Vuex.Store({
                 let highestCombo = { up: 0, down: 0 };
                 let existedNumber = [];
                 let existedNumberCounter = {};
-                let existedPair = [];
-                let pairHolder = {};
+                let existedCombined = [];
+                let combinedHolder = {};
 
                 if (range.values && range.values.length > 0) {
                     for (let i = 0; i < range.values.length; i++) {
@@ -186,14 +186,14 @@ export default new Vuex.Store({
                                 }
                             }
 
-                            const toString = `${up}${down}`;
-                            const pair = existedPair.filter(x => x === toString);
+                            const combined = `${up}${down}`;
+                            const hasCombined = existedCombined.filter(x => x.a === combined || x.b === combined);
 
-                            if (pair.length > 0) {
-                                pairHolder[toString].times++;
+                            if (hasCombined.length > 0) {
+                                combinedHolder[`${hasCombined[0].a}${hasCombined[0].b}`].times++;
                             } else {
-                                existedPair.push(toString);
-                                pairHolder[toString] = { up, down, times: 1 };
+                                existedCombined.push({ a: combined, b: `${down}${up}` });
+                                combinedHolder[`${combined}${down}${up}`] = { a: up, b: down, times: 1 };
                             }
                         }
                     }
@@ -202,7 +202,7 @@ export default new Vuex.Store({
                 }
 
                 const entries = Object.entries(existedNumberCounter);
-                const values = Object.values(pairHolder);
+                const values = Object.values(combinedHolder);
 
                 commit('updateHighestUpDown', { highestUpDown: highestCombo });
                 commit('updateEqualUpDown', { equalUpDown: entries });

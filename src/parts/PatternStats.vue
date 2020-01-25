@@ -67,17 +67,17 @@
 
         <div class="ps__pattern_results">
             <div class="table_header">
-                <p>UP</p>
+                <p>A</p>
 
-                <p>DOWN</p>
+                <p>B</p>
 
                 <p>TIMES</p>
             </div>
 
-            <div v-for="item in similarPatterns" :key="`pair-${item.up}-${item.down}`">
-                <p>{{ item.up }}</p>
+            <div v-for="item in similarPatterns" :key="`pair-${item.a}-${item.b}`">
+                <p>{{ item.a }}</p>
 
-                <p>{{ item.down }}</p>
+                <p>{{ item.b }}</p>
 
                 <p>{{ item.times }}</p>
             </div>
