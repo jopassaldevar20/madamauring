@@ -60,9 +60,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex';
-
 import { monthNames, tradeType, tradeSymbol } from '@/common/collections';
-
 import BaseCard from '@/components/BaseCard';
 
 export default {
@@ -101,6 +99,9 @@ export default {
             'updateSearchPattern',
             'updateSearchBull',
             'updateSearchBear',
+            'updateSearchSecondaryPattern',
+            'updateSearchSecondaryBull',
+            'updateSearchSecondaryBear',
             'updateBlockUi',
             'updateConvertedPattern'
         ]),
@@ -134,6 +135,20 @@ export default {
                 this.updateSearchPattern({ searchPattern: patternExist ? patternExist.pattern : '' });
                 this.updateSearchBull({ searchBull: patternExist ? patternExist.up : 0 });
                 this.updateSearchBear({ searchBear: patternExist ? patternExist.down : 0 });
+
+                const num = this.pattern.charAt(this.pattern.length - 1);
+                const secondaryPattern = this.pattern.slice(0, -1) + (num === '0' ? '1' : '0');
+                const secondaryPatternExist = await this.isPatternExist({ pattern: secondaryPattern });
+
+                this.updateSearchSecondaryPattern({
+                    searchSecondaryPattern: secondaryPatternExist ? secondaryPatternExist.pattern : ''
+                });
+                this.updateSearchSecondaryBull({
+                    searchSecondaryBull: secondaryPatternExist ? secondaryPatternExist.up : 0
+                });
+                this.updateSearchSecondaryBear({
+                    searchSecondaryBear: secondaryPatternExist ? secondaryPatternExist.down : 0
+                });
             }
 
             this.updateBlockUi({ blockUi: false });
@@ -154,13 +169,17 @@ export default {
                         up: this.searchBull,
                         down: this.searchBear
                     });
-                        
+
                     this.pattern = '';
                     this.updateSearchPattern({ searchPattern: '' });
                     this.updateSearchBull({ searchBull: 0 });
                     this.updateSearchBear({ searchBear: 0 });
+
+                    this.updateSearchSecondaryPattern({ searchSecondaryPattern: '' });
+                    this.updateSearchSecondaryBull({ searchSecondaryBull: 0 });
+                    this.updateSearchSecondaryBear({ searchSecondaryBear: 0 });
                 }
-                
+
                 this.updateBlockUi({ blockUi: false });
             }
         }

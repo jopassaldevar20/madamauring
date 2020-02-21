@@ -1,5 +1,9 @@
 <template>
     <BaseCard class="pattern_stats_wrapper">
+        <div class="base_button blue" @click="getAllPattern">
+            <p>UPDATE</p>
+        </div>
+
         <div class="ps__up_down">
             <p>HIGHEST</p>
 
@@ -61,10 +65,6 @@
             </div>
         </div>
 
-        <div class="base_button blue" @click="getAllPattern">
-            <p>UPDATE</p>
-        </div>
-
         <div class="ps__pattern_results">
             <div class="table_header">
                 <p>A</p>
@@ -74,14 +74,13 @@
                 <p>TIMES</p>
             </div>
 
-            <div v-for="item in similarPatterns" :key="`pair-${item.a}-${item.b}`">
-                <p>{{ item.a }}</p>
+            <div v-for="item in arrangePattern" :key="`pair-${item.high}-${item.low}`">
+                <p>{{ item.high }}</p>
 
-                <p>{{ item.b }}</p>
+                <p>{{ item.low }}</p>
 
                 <p>{{ item.times }}</p>
             </div>
-
         </div>
     </BaseCard>
 </template>
@@ -109,6 +108,10 @@ export default {
 
         totalEqual () {
             return this.equalUpDown.reduce((p, c) => p + c[1], 0);
+        },
+
+        arrangePattern () {
+            return this.arrangeHelper(this.similarPatterns);
         }
     },
 
@@ -125,6 +128,28 @@ export default {
             }
 
             return numStr;
+        },
+
+        arrangeHelper (items) {
+            let mutatedItems = [];
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                let obj = {};
+
+                if (item.a > item.b) {
+                    obj.high = item.a;
+                    obj.low = item.b;
+                } else {
+                    obj.high = item.b;
+                    obj.low = item.a;
+                }
+
+                obj.times = item.times;
+                mutatedItems.push(obj);
+            }
+
+            return mutatedItems.sort((a, b) => ((`${a.high}${a.low}`) > `${b.high}${b.low}`) ? 1 : -1);
         }
     },
 
@@ -251,7 +276,7 @@ export default {
         }
 
         .eg__graph {
-            margin-top: 10px;
+            margin: 10px 0;
             display: flex;
             align-items: flex-end;
             background-color: rgba(#4d83ff, .2);
@@ -274,7 +299,7 @@ export default {
     }
 
     .base_button {
-        margin: 20px 10px 10px;
+        margin: 10px;
     }
 
     .ps__pattern_results {

@@ -19,6 +19,9 @@ export default new Vuex.Store({
         searchPattern: '',
         searchBull: 0,
         searchBear: 0,
+        searchSecondaryPattern: '',
+        searchSecondaryBull: 0,
+        searchSecondaryBear: 0,
         blockUi: false,
         orderList: [],
         rightOrder: 0,
@@ -59,6 +62,18 @@ export default new Vuex.Store({
 
         updateSearchBear (state, payload) {
             state.searchBear = payload.searchBear;
+        },
+
+        updateSearchSecondaryPattern(state, payload) {
+            state.searchSecondaryPattern = payload.searchSecondaryPattern;
+        },
+
+        updateSearchSecondaryBull(state, payload) {
+            state.searchSecondaryBull = payload.searchSecondaryBull;
+        },
+
+        updateSearchSecondaryBear(state, payload) {
+            state.searchSecondaryBear = payload.searchSecondaryBear;
         },
 
         updateBlockUi (state, payload) {

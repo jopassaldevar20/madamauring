@@ -27,12 +27,21 @@
                 </div>
             </div>
         </div>
+
+        <div class="sr__secondary">
+            <p class="s__label">OPPOSITE</p>
+
+            <p>{{ parsedSecondaryPattern }}</p>
+
+            <p class="s__bull">{{ addZeros(searchSecondaryBull) }}</p>
+
+            <p class="s__bear">{{ addZeros(searchSecondaryBear) }}</p>
+        </div>
     </BaseCard>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-
 import BaseCard from '@/components/BaseCard';
 
 export default {
@@ -42,16 +51,15 @@ export default {
         BaseCard
     },
 
-    data () {
-        return {
-            patternResult: 'Make a search',
-            goUp: 0,
-            goDown: 0,
-        };
-    },
-
     computed: {
-        ...mapState(['searchPattern', 'searchBull', 'searchBear']),
+        ...mapState([
+            'searchPattern',
+            'searchBull',
+            'searchBear',
+            'searchSecondaryPattern',
+            'searchSecondaryBull',
+            'searchSecondaryBear'
+        ]),
 
         parsedPattern () {
             return this.searchPattern === '' ? 'XXXXXXXXXX' : this.searchPattern;
@@ -67,7 +75,11 @@ export default {
 
         sumOfResult () {
             return this.searchBull + this.searchBear;
-        }
+        },
+
+        parsedSecondaryPattern () {
+            return this.searchSecondaryPattern === '' ? 'XXXXXXXXXX' : this.searchSecondaryPattern;
+        },
     },
 
     methods: {
@@ -143,6 +155,27 @@ export default {
                     font-size: 18px;
                 }
             }
+        }
+    }
+
+    .sr__secondary {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid #313452;
+
+        .s__label {
+            font-weight: 700;
+        }
+
+        .s__bull {
+            padding-left: 6px;
+            border-left: 2px solid #71c016;
+        }
+
+        .s__bear {
+            padding-left: 6px;
+            border-left: 2px solid #ff4747;
         }
     }
 }
