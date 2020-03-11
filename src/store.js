@@ -157,7 +157,7 @@ export default new Vuex.Store({
             try {
                 const response = await window.gapi.client.sheets.spreadsheets.values.get({
                     spreadsheetId: state.mahiwaga.bola,
-                    range: 'Pattern!A2:C1000'
+                    range: 'Pattern!A2:C1200'
                 });
 
                 const range = response.result;
@@ -255,7 +255,9 @@ export default new Vuex.Store({
                     }
                 }
 
-                commit('updateOrderList', { orderList: [...tools.sortArrayByKey(orderList, 'date')] });
+                const sortByDate = tools.sortArrayByKey(orderList, 'date');
+
+                commit('updateOrderList', { orderList: [...sortByDate.reverse()] });
             } catch (error) {
                 commit('updateToast', { type: 'failed', message: error });
             }
@@ -277,7 +279,7 @@ export default new Vuex.Store({
                 const date = new Date(createdAt);
                 const newOrder = { pattern, type, symbol, date, up, down, rowNumber };
 
-                commit('updateOrderList', { orderList: [...state.orderList, newOrder] });
+                commit('updateOrderList', { orderList: [newOrder, ...state.orderList] });
                 return response;
             } catch (error) {
                 commit('updateToast', { type: 'failed', message: error });
