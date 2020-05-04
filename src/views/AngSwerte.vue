@@ -12,7 +12,7 @@
             </div>
 
             <div>
-                <PatternConverter />
+                <PatternHelper />
 
                 <AddOrder />
 
@@ -41,7 +41,7 @@ import LogIn from '@/parts/LogIn';
 import OrderHistory from '@/parts/OrderHistory';
 import OrderList from '@/parts/OrderList';
 import OrderResult from '@/parts/OrderResult';
-import PatternConverter from '@/parts/PatternConverter';
+import PatternHelper from '@/parts/PatternHelper';
 import PatternStats from '@/parts/PatternStats';
 import RealTime from '@/parts/RealTime';
 import SearchResult from '@/parts/SearchResult';
@@ -56,7 +56,7 @@ export default {
         OrderHistory,
         OrderList,
         OrderResult,
-        PatternConverter,
+        PatternHelper,
         PatternStats,
         RealTime,
         SearchResult

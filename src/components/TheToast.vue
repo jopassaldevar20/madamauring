@@ -35,6 +35,8 @@ export default {
     position: fixed;
     top: 0;
     left: 0;
+    display: flex;
+    align-items: center;
     cursor: pointer;
 
     &.success {
@@ -50,6 +52,7 @@ export default {
     }
 
     > p {
+        padding-left: 10px;
         color: #212529;
         text-transform: uppercase;
     }
